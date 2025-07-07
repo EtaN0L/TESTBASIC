@@ -1,0 +1,11 @@
+START
+	a = 2.21
+	b = 3.17
+	c = a + b - 1.2 * 3
+	
+	print(a)
+	print(b)
+	print(c)
+	print(2 * 3^2 - a)
+	
+END
