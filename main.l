@@ -8,7 +8,7 @@ NUM [0-9]+\.?[0-9]+
 WORD [a-zA-Z]+([a-zA-Z]|[0-9])*
 STRING  \"([^\\\"]|\\.)*\"
 
-DEF "def"
+FN "fn"
 
 COMM "##".*
 %x ML_COMM
@@ -23,16 +23,16 @@ WHILE "while"
 FOR "for"
 
 PRINT "print"
-KEYINPUT "input"
+SCAN "scan"
 
-RUN "RUN"
+START "START"
 END "END"
 
 IGNORE [\ \t\s.]
 
 
 %%
-{DEF}       { return DEF; }
+{FN}        { return FN; }
 
 {ADDONE}    { return ADDONE; }
 {MINUSONE}  { return MINUSONE; }
@@ -43,22 +43,22 @@ IGNORE [\ \t\s.]
 {FOR}       { return FOR; }
 
 {PRINT}     { return PRINT; }
-{KEYINPUT}  { return KEYINPUT; }
+{SCAN}      { return SCAN; }
 
-{RUN}       { return RUN; }
-{END}       { return RUN; }
+{START}     { return START; }
+{END}       { return END; }
 
-{NUM}     { yylval.fl = atof(yytext); return NUM; }
+{NUM}       { yylval.num = atof(yytext); return NUM; }
 
-{WORD}       { strcpy(yylval.text, yytext); return WORD; }
+{WORD}      { strcpy(yylval.text, yytext); return WORD; }
 
-{COMM} {;}
+{COMM}      {;}
 
 {STRING}    { for(int count=0;count<strlen(yytext);count++){
                 yytext[count] = yytext[count+1];
                 }
                 yytext[strlen(yytext)-1] = '\0';
-                strcpy(yylval.text, yytext);
+                strcpy(yylval.str, yytext);
                 return STRING;
             }
 
@@ -71,14 +71,14 @@ IGNORE [\ \t\s.]
 
 [+-/|*=^:;,\[\](){}]    { return *yytext; }
 
-">"  {yylval.fn = 1; return CMP; }
-"<"  {yylval.fn = 2; return CMP; }
-"!=" {yylval.fn = 3; return CMP; }
-"==" {yylval.fn = 4; return CMP; }
-">=" {yylval.fn = 5; return CMP; }
-"<=" {yylval.fn = 6; return CMP; }
-"||" {yylval.fn = 7; return CMP; }
-"&&" {yylval.fn = 8; return CMP; }
+">"  {yylval.cmp = 1; return CMP; }
+"<"  {yylval.cmp = 2; return CMP; }
+"!=" {yylval.cmp = 3; return CMP; }
+"==" {yylval.cmp = 4; return CMP; }
+">=" {yylval.cmp = 5; return CMP; }
+"<=" {yylval.cmp = 6; return CMP; }
+"||" {yylval.cmp = 7; return CMP; }
+"&&" {yylval.cmp = 8; return CMP; }
 
 [\n]        {yylineno++;}
 %%
