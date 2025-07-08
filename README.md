@@ -10,7 +10,7 @@ COMMENTS(ALSO MULTI-LINE)
 EXAMPLE:
 
 
-
+```
 START
 	a = 2.21
 	b = 3.17
@@ -22,7 +22,7 @@ START
 	print(2 * 3^2 - a)
 	
 END
-
+```
 
 
 
