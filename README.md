@@ -29,3 +29,5 @@ would be:
 10 PRINT "SOMETHING"
 20 GOTO 10
 ```
+
+No need for while and for when you have super easy GOTO.
