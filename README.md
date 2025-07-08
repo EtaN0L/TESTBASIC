@@ -40,3 +40,9 @@ HOW IT WOULD BE:
 80    	print(2 * 3^2 - a)	
 90  END
 ```
+
+With this, GOTO would be simple to implement, a while(1){printf("SOMETHING")}; would be:
+```
+10 PRINT "SOMETHING"
+20 GOTO 10
+```
