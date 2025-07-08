@@ -29,6 +29,7 @@ END
 TODO: add line number recognition to written programs, would make GOTO easy(like in BASIC)
 
 HOW IT WOULD BE:
+```
 10  START
 20  	a = 2.21
 30  	b = 3.17
@@ -38,3 +39,4 @@ HOW IT WOULD BE:
 70  	print(c)
 80    	print(2 * 3^2 - a)	
 90  END
+```
