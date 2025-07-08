@@ -1,34 +1,13 @@
-BASIC Inspired compiler (does nothing remotely related, may as well be just a name)
+BASIC Inspired compiler (does nothing related yet)
 
 Here are the things it could do(if it worked):
 
 OPERATIONS
 CONTROL FLOW(IF ELSE)
 COMMENTS(ALSO MULTI-LINE)
-
+EASY GOTO
 
 EXAMPLE:
-
-
-```
-START
-	a = 2.21
-	b = 3.17
-	c = a + b - 1.2 * 3
-	
-	print(a)
-	print(b)
-	print(c)
-	print(2 * 3^2 - a)
-	
-END
-```
-
-
-
-TODO: add line number recognition to written programs, would make GOTO easy(like in BASIC)
-
-HOW IT WOULD BE:
 ```
 10  START
 20  	a = 2.21
@@ -41,7 +20,11 @@ HOW IT WOULD BE:
 90  END
 ```
 
-With this, GOTO would be simple to implement, a while(1){printf("SOMETHING")}; would be:
+With this, GOTO would be simple to implement, a 
+```
+while(1){printf("SOMETHING")};
+```
+would be:
 ```
 10 PRINT "SOMETHING"
 20 GOTO 10
