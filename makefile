@@ -1,6 +1,6 @@
 all: main.l main.y
 	clear
-	flex main.l
+	flex -i main.l
 	bison -d main.y
-	gcc -lfl main.tab.c -o testbasic1
-	./testbasic1
+	gcc main.tab.c lex.yy.c -lfl -o testbasic1
+	./testbasic1 input.tbs

@@ -3,12 +3,14 @@
 %{
 
 %}
-
+LINENUM [0-9]+
 NUM [0-9]+\.?[0-9]+
-WORD [a-zA-Z]+([a-zA-Z]|[0-9])*
+WORD [a-zA-Z_]+([a-zA-Z_]|[0-9])*
 STRING  \"([^\\\"]|\\.)*\"
 
 FN "fn"
+LET "let"
+GOTO "goto"
 
 COMM "##".*
 %x ML_COMM
@@ -23,7 +25,7 @@ WHILE "while"
 FOR "for"
 
 PRINT "print"
-SCAN "scan"
+INPUT "input"
 
 START "START"
 END "END"
@@ -33,6 +35,8 @@ IGNORE [\ \t\s.]
 
 %%
 {FN}        { return FN; }
+{LET}       { return LET; }
+{GOTO}      { return GOTO; }
 
 {ADDONE}    { return ADDONE; }
 {MINUSONE}  { return MINUSONE; }
@@ -43,11 +47,12 @@ IGNORE [\ \t\s.]
 {FOR}       { return FOR; }
 
 {PRINT}     { return PRINT; }
-{SCAN}      { return SCAN; }
+{INPUT}      { return INPUT; }
 
 {START}     { return START; }
 {END}       { return END; }
 
+{LINENUM}   { yylval.linenum = atoi(yytext); return LINENUM; }
 {NUM}       { yylval.num = atof(yytext); return NUM; }
 
 {WORD}      { strcpy(yylval.text, yytext); return WORD; }

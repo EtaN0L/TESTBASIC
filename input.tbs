@@ -1,9 +1,7 @@
-10  START
-20  	a = 2.21
-30  	b = 3.17
+10  	START
+20  	a = 2
+30  	b = 3
 40  	c = a + b - 1.2 * 3
-50  	print(a)
-60  	print(b)
-70  	print(c)
-80    	print(2 * 3^2 - a)	
-90  END
+50  	print(c)
+60    	print(2 * 3^2 - a)	
+70  	END

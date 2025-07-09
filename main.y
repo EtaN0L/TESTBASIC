@@ -13,6 +13,7 @@ typedef enum { AST_NUM, AST_VAR, AST_BINOP, AST_ASSIGN, AST_IF } ASTNodeType;
 
 typedef struct ASTNode {
     ASTNodeType type;
+    int linenum; // <--- Add this line
     union {
         float num;
         char var[100];
@@ -118,6 +119,30 @@ void print_ast(ASTNode* node, int indent) {
     }
 }
 
+void execute_sorted(ASTNodeList* list) {
+    // Count statements
+    int count = 0;
+    ASTNodeList* curr = list;
+    while (curr) { count++; curr = curr->next; }
+    // Collect pointers
+    ASTNode** stmts = malloc(count * sizeof(ASTNode*));
+    curr = list;
+    for (int i = 0; i < count; ++i) {
+        stmts[i] = curr->node;
+        curr = curr->next;
+    }
+    // Sort by linenum
+    int cmp(const void* a, const void* b) {
+        return (*(ASTNode**)a)->linenum - (*(ASTNode**)b)->linenum;
+    }
+    qsort(stmts, count, sizeof(ASTNode*), cmp);
+    // Execute/print
+    for (int i = 0; i < count; ++i) {
+        print_ast(stmts[i], 0);
+    }
+    free(stmts);
+}
+
 %}
 
 %union{
@@ -126,13 +151,16 @@ void print_ast(ASTNode* node, int indent) {
   char str[100];
   struct ASTNode* ast;
   struct ASTNodeList* next;
+  int linenum;
 }
 
 %token <num> NUM
+%token <str> WORD
 %token <str> STRING
-%token START END DEF IF ELSE WHILE FOR PRINT SCAN
+%token <linenum> LINENUM
+%token IF ELSE PRINT SCAN
 %token <cmp> CMP
-%type <ast> program expr stmt
+%type <ast> program expr stmt opt_linenum
 %type <next>  stmt_list
 
 %right '='
@@ -140,28 +168,32 @@ void print_ast(ASTNode* node, int indent) {
 %left '*' '/'
 %left CMP
 
+%start program
 
 %%
 
 program
-    : stmt_list { $$ = $1; }
-    ;
-
-stmt
-    : STRING '=' expr                { $$ = new_assign($1, $3); }
-    | expr                           { $$ = $1; }
-    | IF expr stmt_list ELSE stmt_list { $$ = new_if($2, $3, $5); }
-    | IF expr stmt_list                { $$ = new_if($2, $3, NULL); }
+    : stmt_list { root = $1; }
     ;
 
 stmt_list
     : stmt                        { $$ = new_stmt_list($1, NULL); }
     | stmt_list stmt              { $$ = new_stmt_list($2, $1); }
     ;
-    
+
+stmt
+    : opt_linenum WORD '=' expr   { $$ = new_assign($2, $4); $$->linenum = $1; }
+    | opt_linenum PRINT '(' expr ')' { /* handle print */ }
+    ;
+
+opt_linenum
+    : LINENUM { $$ = $1; }
+    |         { $$ = -1; }
+    ;
+
 expr
     : NUM                { $$ = new_num($1); }
-    | STRING             { $$ = new_var($1); }
+    | WORD               { $$ = new_var($1); }
     | expr '+' expr      { $$ = new_binop('+', $1, $3); }
     | expr '-' expr      { $$ = new_binop('-', $1, $3); }
     | expr '*' expr      { $$ = new_binop('*', $1, $3); }
@@ -171,6 +203,8 @@ expr
 %%
 
 #include "lex.yy.c"
+
+ASTNodeList* root = NULL;
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -192,13 +226,12 @@ int main(int argc, char *argv[]) {
 
     yyin = file;
 
-    ASTNode* root = NULL;
-    yyparse(&root);
+    yyparse();
 
     fclose(file);
 
     if (root) {
-        print_ast(root, 0);
+        execute_sorted(root);
     }
     return 0;
 }
